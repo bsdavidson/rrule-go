@@ -1,6 +1,7 @@
 package rrule
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 )
@@ -3677,5 +3678,28 @@ func TestBetweenInc(t *testing.T) {
 	value := r.Between(time.Date(1997, 9, 2, 9, 0, 0, 0, time.UTC), time.Date(1997, 9, 6, 9, 0, 0, 0, time.UTC), true)
 	if !timesEqual(value, want) {
 		t.Errorf("get %v, want %v", value, want)
+	}
+}
+
+func TestMarshalText(t *testing.T) {
+	tests := []string{
+		`"FREQ=DAILY;DTSTART=19970902T010000Z;COUNT=10"`,
+		`"FREQ=WEEKLY;INTERVAL=2;UNTIL=20180520T070000Z;BYDAY=SU,TU,TH,FR"`,
+	}
+
+	for _, want := range tests {
+		var rr RRule
+		err := json.Unmarshal([]byte(want), &rr)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+		}
+		b, err := json.Marshal(&rr)
+		if err != nil {
+			t.Errorf("unexpected error %v", err)
+		}
+		value := string(b)
+		if value != want {
+			t.Errorf("get %v, want %v", value, want)
+		}
 	}
 }

@@ -121,6 +121,21 @@ type RRule struct {
 	len                     int
 }
 
+// MarshalText encodes the rrule into text.
+func (rr *RRule) MarshalText() ([]byte, error) {
+	return []byte(rr.String()), nil
+}
+
+// UnmarshalText decodes a text description of an rrule.
+func (rr *RRule) UnmarshalText(b []byte) error {
+	nrr, err := StrToRRule(string(b))
+	if err != nil {
+		return err
+	}
+	*rr = *nrr
+	return nil
+}
+
 // NewRRule construct a new RRule instance
 func NewRRule(arg ROption) (*RRule, error) {
 	r := RRule{}
